@@ -17,7 +17,7 @@ YUI.add('node-core', function (Y, NAME) {
  *
  * @class Node
  * @constructor
- * @param {DOMNode} node the DOM node to be mapped to the Node instance.
+ * @param {HTMLElement} node the DOM node to be mapped to the Node instance.
  * @uses EventTarget
  */
 
@@ -62,7 +62,7 @@ var DOT = '.',
         /**
          * The underlying DOM node bound to the Y.Node instance
          * @property _node
-         * @type DOMNode
+         * @type HTMLElement
          * @private
          */
         this._node = node;
@@ -139,8 +139,8 @@ Y_Node._instances = {};
  * @method getDOMNode
  * @static
  *
- * @param {Node | HTMLNode} node The Node instance or an HTMLNode
- * @return {HTMLNode} The DOM node bound to the Node instance.  If a DOM node is passed
+ * @param {Node|HTMLElement} node The Node instance or an HTMLElement
+ * @return {HTMLElement} The DOM node bound to the Node instance.  If a DOM node is passed
  * as the node argument, it is simply returned.
  */
 Y_Node.getDOMNode = function(node) {
@@ -158,7 +158,7 @@ Y_Node.getDOMNode = function(node) {
  * @method scrubVal
  * @static
  *
- * @param {any} node The Node instance or an HTMLNode
+ * @param {HTMLElement|HTMLElement[]|Node} node The Node instance or an HTMLElement
  * @return {Node | NodeList | Any} Depends on what is returned from the DOM node.
  */
 Y_Node.scrubVal = function(val, node) {
@@ -695,7 +695,7 @@ Y.mix(Y_Node.prototype, {
      * and does not change the node bound to the Node instance.
      * Shortcut for myNode.get('parentNode').replaceChild(newNode, myNode);
      * @method replace
-     * @param {Node | HTMLNode} newNode Node to be inserted
+     * @param {Node | HTMLElement} newNode Node to be inserted
      * @chainable
      *
      */
@@ -765,8 +765,8 @@ Y.mix(Y_Node.prototype, {
      * Invokes a method on the Node instance
      * @method invoke
      * @param {String} method The name of the method to invoke
-     * @param {Any}  a, b, c, etc. Arguments to invoke the method with.
-     * @return Whatever the underly method returns.
+     * @param {any} [args*] Arguments to invoke the method with.
+     * @return {any} Whatever the underly method returns.
      * DOM Nodes and Collections return values
      * are converted to Node/NodeList instances.
      *
@@ -841,7 +841,7 @@ Y.mix(Y_Node.prototype, {
     /**
      * Returns the DOM node bound to the Node instance
      * @method getDOMNode
-     * @return {DOMNode}
+     * @return {HTMLElement}
      */
     getDOMNode: function() {
         return this._node;
@@ -948,10 +948,20 @@ NodeList.addMethod = function(name, fn, context) {
     }
 };
 
+/**
+ * Import the named method, or methods from the host onto NodeList.
+ *
+ * @method importMethod
+ * @static
+ * @param {Object} host The object containing the methods to copy. Typically a prototype.
+ * @param {String|String[]} name The name, or an Array of names of the methods to import onto NodeList.
+ * @param {String} [altName] An alternative name to use for the method added to NodeList, which may differ from the name
+ * of the original host object. Has no effect if <em>name</em> is an array of method names.
+ */
 NodeList.importMethod = function(host, name, altName) {
     if (typeof name === 'string') {
         altName = altName || name;
-        NodeList.addMethod(name, host[name]);
+        NodeList.addMethod(altName, host[name]);
     } else {
         Y.Array.each(name, function(n) {
             NodeList.importMethod(host, n);
@@ -1059,8 +1069,8 @@ Y.mix(NodeList.prototype, {
      * Returns the index of the node in the NodeList instance
      * or -1 if the node isn't found.
      * @method indexOf
-     * @param {Node | DOMNode} node the node to search for
-     * @return {Int} the index of the node value or -1 if not found
+     * @param {Node | HTMLElement} node the node to search for
+     * @return {Number} the index of the node value or -1 if not found
      */
     indexOf: function(node) {
         return Y.Array.indexOf(this._nodes, Y.Node.getDOMNode(node));
@@ -1083,8 +1093,8 @@ Y.mix(NodeList.prototype, {
      * remainder n % index equals r.
      * (zero-based index).
      * @method modulus
-     * @param {Int} n The offset to use (return every nth node)
-     * @param {Int} r An optional remainder to use with the modulus operation (defaults to zero)
+     * @param {Number} n The offset to use (return every nth node)
+     * @param {Number} r An optional remainder to use with the modulus operation (defaults to zero)
      * @return {NodeList} NodeList containing the updated collection
      */
     modulus: function(n, r) {
@@ -1149,7 +1159,7 @@ Y.mix(NodeList.prototype, {
     /**
      * Returns the current number of items in the NodeList.
      * @method size
-     * @return {Int} The number of items in the NodeList.
+     * @return {Number} The number of items in the NodeList.
      */
     size: function() {
         return this._nodes.length;
@@ -1317,7 +1327,7 @@ var Y_NodeList = Y.NodeList,
         /** Adds the given Node(s) to the end of the NodeList.
           * @for NodeList
           * @method push
-          * @param {Node | DOMNode} nodes One or more nodes to add to the end of the NodeList.
+          * @param {Node | HTMLElement} nodes One or more nodes to add to the end of the NodeList.
           */
         'push': 0,
         /** Removes the first item from the NodeList and returns it.
@@ -1343,7 +1353,7 @@ var Y_NodeList = Y.NodeList,
           * @method splice
           * @param {Number} index Index at which to start changing the array. If negative, will begin that many elements from the end.
           * @param {Number} howMany An integer indicating the number of old array elements to remove. If howMany is 0, no elements are removed. In this case, you should specify at least one new element. If no howMany parameter is specified (second syntax above, which is a SpiderMonkey extension), all elements after index are removed.
-          * {Node | DOMNode| element1, ..., elementN
+          * {Node | HTMLElement| element1, ..., elementN
           The elements to add to the array. If you don't specify any elements, splice simply removes elements from the array.
           * @return {NodeList} The element(s) removed.
           */
@@ -1351,7 +1361,7 @@ var Y_NodeList = Y.NodeList,
         /** Adds the given Node(s) to the beginning of the NodeList.
           * @for NodeList
           * @method unshift
-          * @param {Node | DOMNode} nodes One or more nodes to add to the NodeList.
+          * @param {Node | HTMLElement} nodes One or more nodes to add to the NodeList.
           */
         'unshift': 0
     };

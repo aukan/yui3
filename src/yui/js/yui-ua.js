@@ -194,6 +194,13 @@ YUI.Env.parseUA = function(subUA) {
          */
         silk: 0,
         /**
+         * Detects Ubuntu version
+         * @property ubuntu
+         * @type float
+         * @static
+         */
+        ubuntu: 0,
+        /**
          * Detects Kindle Silk Acceleration
          * @property accel
          * @type Boolean
@@ -224,7 +231,10 @@ YUI.Env.parseUA = function(subUA) {
         secure: false,
 
         /**
-         * The operating system.  Currently only detecting windows or macintosh
+         * The operating system.
+         *
+         * Possible values are `windows`, `macintosh`, `android`, `symbos`, `linux`, `rhino` and `ios`.
+         *
          * @property os
          * @type string
          * @default null
@@ -344,9 +354,7 @@ YUI.Env.parseUA = function(subUA) {
                     }
                 }
                 if (/ Android/.test(ua)) {
-                    if (/Mobile/.test(ua)) {
-                        o.mobile = 'Android';
-                    }
+                    o.mobile = 'Android';
                     m = ua.match(/Android ([^\s]*);/);
                     if (m && m[1]) {
                         o.android = numberify(m[1]);
@@ -354,7 +362,7 @@ YUI.Env.parseUA = function(subUA) {
 
                 }
                 if (/Silk/.test(ua)) {
-                    m = ua.match(/Silk\/([^\s]*)\)/);
+                    m = ua.match(/Silk\/([^\s]*)/);
                     if (m && m[1]) {
                         o.silk = numberify(m[1]);
                     }
@@ -388,6 +396,25 @@ YUI.Env.parseUA = function(subUA) {
                         o.air = m[0]; // Adobe AIR 1.0 or better
                     }
                 }
+            }
+        }
+
+        m = ua.match(/Ubuntu\ (\d+\.\d+)/);
+        if (m && m[1]) {
+
+            o.os = 'linux';
+            o.ubuntu = numberify(m[1]);
+
+            m = ua.match(/\ WebKit\/([^\s]*)/);
+            if (m && m[1]) {
+                o.webkit = numberify(m[1]);
+            }
+            m = ua.match(/\ Chromium\/([^\s]*)/);
+            if (m && m[1]) {
+                o.chrome = numberify(m[1]);
+            }
+            if (/ Mobile$/.test(ua)) {
+                o.mobile = 'Ubuntu';
             }
         }
 
